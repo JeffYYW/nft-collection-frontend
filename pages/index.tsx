@@ -14,17 +14,57 @@ declare global {
 
 const Home: NextPage = () => {
   const [currentAccount, setCurrentAccount] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Please install MetaMask");
+        setIsLoading(false);
+        return;
+      }
+
+      const accounts = (await ethereum.request({
+        method: "eth_accounts",
+      })) as string[];
+
+      if (accounts.length !== 0) {
+        const account = accounts[0];
+        console.log("Connected", account);
+        setCurrentAccount(account);
+      } else {
+        console.log("No authorized account found");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    setIsLoading(false);
+  };
+
+  const connectWalletAction = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Please install MetaMask");
+        setIsLoading(false);
+        return;
+      }
+
+      // ------connect here---------
     } catch (error) {
       console.log(error);
     }
   };
 
   // Wallet connection effects
-  useEffect(() => {}, []);
+  useEffect(() => {
+    setIsLoading(true);
+    checkIfWalletIsConnected();
+  }, []);
 
   return (
     <div className={styles.container}>
