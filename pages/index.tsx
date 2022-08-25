@@ -105,35 +105,44 @@ const Home: NextPage = () => {
     const getNFTs = async () => {
       console.log("trying to get nfts");
       try {
-        const tokens = await nftContract?.getTokensByAddress(currentAccount);
-        console.log(tokens);
+        const tokens: ethers.BigNumber[] =
+          (await nftContract?.getTokensByAddress(
+            currentAccount
+          )) as ethers.BigNumber[];
+        console.log("tokens", tokens);
 
-        const readableTokens = tokens?.map((token) =>
-          console.log(token.toNumber())
+        const readableTokens: number[] = tokens?.map((token) =>
+          token.toNumber()
         );
-        console.log(readableTokens);
+        console.log("readable tokens", readableTokens);
 
-        const tokenURI = (await nftContract?.tokenURI(1)) as string;
-        console.log("token URI", tokenURI);
+        if (readableTokens.length !== 0) {
+          // const tokenURI: string = (await nftContract?.tokenURI(
+          //   readableTokens[0]
+          // )) as string;
 
-        // const byteCharacters = atob(b64Data);
-        // const byteNumbers = new Array(byteCharacters.length);
-        // for (let i = 0; i < byteCharacters.length; i++) {
-        //   byteNumbers[i] = byteCharacters.charCodeAt(i);
-        // }
-        // const byteArray = new Uint8Array(byteNumbers);
-        // const blob = new Blob([byteArray], { type: contentType });
+          console.log("readableTokens in get", readableTokens);
+          const getUris = async () => {
+            await Promise.all(
+              readableTokens.map(async (token) => {
+                const URI = await nftContract?.tokenURI(token);
+                console.log(URI);
+              })
+            );
+          };
 
-        // 29 = length of "data:application/json;base64,"
-        const json = atob(tokenURI.substring(29));
-        const result = JSON.parse(json);
-        console.log("result", result);
+          getUris();
+
+          //   // const json = atob(tokenURI.substring(29)); // 29 = length of "data:application/json;base64,"
+          //   // const result = JSON.parse(json);
+          //   // console.log("result", result);
+        }
       } catch (error) {
         console.log("cannot get nfts");
         console.log(error);
       }
     };
-    getNFTs();
+    if (nftContract) getNFTs();
 
     const onNFTMint = async (sender: string, tokenId: number) => {
       console.log(
