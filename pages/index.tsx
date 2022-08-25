@@ -113,8 +113,21 @@ const Home: NextPage = () => {
         );
         console.log(readableTokens);
 
-        const tokenURI = await nftContract?.tokenURI(1);
+        const tokenURI = (await nftContract?.tokenURI(1)) as string;
         console.log("token URI", tokenURI);
+
+        // const byteCharacters = atob(b64Data);
+        // const byteNumbers = new Array(byteCharacters.length);
+        // for (let i = 0; i < byteCharacters.length; i++) {
+        //   byteNumbers[i] = byteCharacters.charCodeAt(i);
+        // }
+        // const byteArray = new Uint8Array(byteNumbers);
+        // const blob = new Blob([byteArray], { type: contentType });
+
+        // 29 = length of "data:application/json;base64,"
+        const json = atob(tokenURI.substring(29));
+        const result = JSON.parse(json);
+        console.log("result", result);
       } catch (error) {
         console.log("cannot get nfts");
         console.log(error);
