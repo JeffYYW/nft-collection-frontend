@@ -1,36 +1,62 @@
 import React, { useState, useEffect } from "react";
 import { OrigamiNFT } from "../typechain-types/contracts/OrigamiNFT";
+import { ethers } from "ethers";
 
-const useGetTokensByAddress = async (contract: OrigamiNFT, address: string) => {
-  const [tokenIds, setTokenIds] = useState([]);
+interface INFTObject {
+  description: string;
+  image: string;
+  name: string;
+}
+
+const useGetTokensByAddress = (contract: OrigamiNFT, address: string) => {
+  const [nftObjects, setNftObjects] = useState<INFTObject[]>([]);
 
   useEffect(() => {
     const getNFTs = async () => {
       console.log("trying to get nfts");
       try {
-        const tokens = await contract?.getTokensByAddress(address);
-        console.log(tokens);
+        const tokens: ethers.BigNumber[] = (await contract?.getTokensByAddress(
+          address
+        )) as ethers.BigNumber[];
+        console.log("tokens", tokens);
 
-        const readableTokens = tokens?.map((token) =>
-          console.log(token.toNumber())
+        const readableTokens: number[] = tokens?.map((token) =>
+          token.toNumber()
         );
         console.log("readable tokens", readableTokens);
 
-        const tokenURI = (await contract?.tokenURI(1)) as string;
-        console.log("token URI", tokenURI);
+        if (readableTokens.length !== 0) {
+          console.log("readableTokens in get", readableTokens);
+          const getUris = async () => {
+            const uriList: string[] = [];
 
-        const json = atob(tokenURI.substring(29)); // 29 = length of "data:application/json;base64,"
-        const result = JSON.parse(json);
-        console.log("result", result);
+            await Promise.all(
+              readableTokens.map(async (token) => {
+                const URI: string = (await contract?.tokenURI(token)) as string;
+                uriList.push(URI);
+              })
+            );
+
+            const jsonObjectList: INFTObject[] = uriList.map((uri) => {
+              const json = atob(uri.substring(29));
+              const result: INFTObject = JSON.parse(json);
+              return result;
+            });
+
+            setNftObjects(jsonObjectList);
+          };
+
+          getUris();
+        }
       } catch (error) {
         console.log("cannot get nfts");
         console.log(error);
       }
     };
-    getNFTs();
-  });
+    if (contract) getNFTs();
+  }, [contract, address]);
 
-  return <div>useGetTokensByAddress</div>;
+  return { nftObjects };
 };
 
 export default useGetTokensByAddress;

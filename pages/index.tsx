@@ -10,6 +10,7 @@ import origamiNFT from "../utils/OrigamiNFT.json";
 import { CONTRACT_ADDRESS } from "../constants";
 import { OrigamiNFT__factory } from "../typechain-types/factories/contracts/OrigamiNFT__factory";
 import { OrigamiNFT } from "../typechain-types/contracts/OrigamiNFT";
+import useGetTokensByAddress from "../hooks/useGetTokensByAddress";
 
 declare global {
   interface Window {
@@ -100,49 +101,60 @@ const Home: NextPage = () => {
     }
   }, []);
 
+  const { nftObjects } = useGetTokensByAddress(
+    nftContract as OrigamiNFT,
+    currentAccount
+  );
+
+  console.log("from custom hook", nftObjects);
+
   // Contract effects
   useEffect(() => {
-    const getNFTs = async () => {
-      console.log("trying to get nfts");
-      try {
-        const tokens: ethers.BigNumber[] =
-          (await nftContract?.getTokensByAddress(
-            currentAccount
-          )) as ethers.BigNumber[];
-        console.log("tokens", tokens);
+    // const getNFTs = async () => {
+    //   console.log("trying to get nfts");
+    //   try {
+    //     const tokens: ethers.BigNumber[] =
+    //       (await nftContract?.getTokensByAddress(
+    //         currentAccount
+    //       )) as ethers.BigNumber[];
+    //     console.log("tokens", tokens);
 
-        const readableTokens: number[] = tokens?.map((token) =>
-          token.toNumber()
-        );
-        console.log("readable tokens", readableTokens);
+    //     const readableTokens: number[] = tokens?.map((token) =>
+    //       token.toNumber()
+    //     );
+    //     console.log("readable tokens", readableTokens);
 
-        if (readableTokens.length !== 0) {
-          // const tokenURI: string = (await nftContract?.tokenURI(
-          //   readableTokens[0]
-          // )) as string;
+    //     if (readableTokens.length !== 0) {
+    //       console.log("readableTokens in get", readableTokens);
+    //       const getUris = async () => {
+    //         const uriList: string[] = [];
 
-          console.log("readableTokens in get", readableTokens);
-          const getUris = async () => {
-            await Promise.all(
-              readableTokens.map(async (token) => {
-                const URI = await nftContract?.tokenURI(token);
-                console.log(URI);
-              })
-            );
-          };
+    //         await Promise.all(
+    //           readableTokens.map(async (token) => {
+    //             const URI: string = (await nftContract?.tokenURI(
+    //               token
+    //             )) as string;
+    //             uriList.push(URI);
+    //           })
+    //         );
 
-          getUris();
+    //         const jsonObjectList = uriList.map((uri) => {
+    //           const json = atob(uri.substring(29));
+    //           const result = JSON.parse(json);
+    //           return result;
+    //         });
 
-          //   // const json = atob(tokenURI.substring(29)); // 29 = length of "data:application/json;base64,"
-          //   // const result = JSON.parse(json);
-          //   // console.log("result", result);
-        }
-      } catch (error) {
-        console.log("cannot get nfts");
-        console.log(error);
-      }
-    };
-    if (nftContract) getNFTs();
+    //         console.log(jsonObjectList);
+    //       };
+
+    //       getUris();
+    //     }
+    //   } catch (error) {
+    //     console.log("cannot get nfts");
+    //     console.log(error);
+    //   }
+    // };
+    // if (nftContract) getNFTs();
 
     const onNFTMint = async (sender: string, tokenId: number) => {
       console.log(
@@ -206,6 +218,17 @@ const Home: NextPage = () => {
       )}
 
       <button onClick={minNft}>Mint NFT</button>
+
+      <ul>
+        {nftObjects &&
+          nftObjects.map((nft) => (
+            <li key={nft.name}>
+              <h3>{nft.name}</h3>
+              <img src={nft.image} alt="nft image" />
+              <h5>{nft.description}</h5>
+            </li>
+          ))}
+      </ul>
     </div>
   );
 };
