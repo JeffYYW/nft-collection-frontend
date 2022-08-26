@@ -31,16 +31,20 @@ export interface OrigamiNFTInterface extends utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "getAllMintedTokens()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getTokensByAddress(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "mintOrigamiNFT()": FunctionFragment;
+    "mintedTokenIds(uint256)": FunctionFragment;
     "name()": FunctionFragment;
     "ownerOf(uint256)": FunctionFragment;
     "pickRandomBGColour(uint256)": FunctionFragment;
     "pickRandomBladeColour(uint256)": FunctionFragment;
+    "pickRandomElement(uint256)": FunctionFragment;
     "pickRandomHiltColourFirstHalf(uint256)": FunctionFragment;
     "pickRandomHiltColourSecondHalf(uint256)": FunctionFragment;
+    "pickRandomTrait(uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
@@ -54,16 +58,20 @@ export interface OrigamiNFTInterface extends utils.Interface {
     nameOrSignatureOrTopic:
       | "approve"
       | "balanceOf"
+      | "getAllMintedTokens"
       | "getApproved"
       | "getTokensByAddress"
       | "isApprovedForAll"
       | "mintOrigamiNFT"
+      | "mintedTokenIds"
       | "name"
       | "ownerOf"
       | "pickRandomBGColour"
       | "pickRandomBladeColour"
+      | "pickRandomElement"
       | "pickRandomHiltColourFirstHalf"
       | "pickRandomHiltColourSecondHalf"
+      | "pickRandomTrait"
       | "safeTransferFrom(address,address,uint256)"
       | "safeTransferFrom(address,address,uint256,bytes)"
       | "setApprovalForAll"
@@ -82,6 +90,10 @@ export interface OrigamiNFTInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "getAllMintedTokens",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getApproved",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
@@ -97,6 +109,10 @@ export interface OrigamiNFTInterface extends utils.Interface {
     functionFragment: "mintOrigamiNFT",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "mintedTokenIds",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "ownerOf",
@@ -111,11 +127,19 @@ export interface OrigamiNFTInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
+    functionFragment: "pickRandomElement",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "pickRandomHiltColourFirstHalf",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "pickRandomHiltColourSecondHalf",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pickRandomTrait",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -160,6 +184,10 @@ export interface OrigamiNFTInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getAllMintedTokens",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getApproved",
     data: BytesLike
   ): Result;
@@ -175,6 +203,10 @@ export interface OrigamiNFTInterface extends utils.Interface {
     functionFragment: "mintOrigamiNFT",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "mintedTokenIds",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "name", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "ownerOf", data: BytesLike): Result;
   decodeFunctionResult(
@@ -186,11 +218,19 @@ export interface OrigamiNFTInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "pickRandomElement",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "pickRandomHiltColourFirstHalf",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "pickRandomHiltColourSecondHalf",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pickRandomTrait",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -315,6 +355,8 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    getAllMintedTokens(overrides?: CallOverrides): Promise<[BigNumber[]]>;
+
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -335,6 +377,11 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    mintedTokenIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     name(overrides?: CallOverrides): Promise<[string]>;
 
     ownerOf(
@@ -352,12 +399,22 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
+    pickRandomElement(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     pickRandomHiltColourFirstHalf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
     pickRandomHiltColourSecondHalf(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    pickRandomTrait(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -414,6 +471,8 @@ export interface OrigamiNFT extends BaseContract {
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
+  getAllMintedTokens(overrides?: CallOverrides): Promise<BigNumber[]>;
+
   getApproved(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
@@ -434,6 +493,11 @@ export interface OrigamiNFT extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  mintedTokenIds(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   name(overrides?: CallOverrides): Promise<string>;
 
   ownerOf(
@@ -451,12 +515,22 @@ export interface OrigamiNFT extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
+  pickRandomElement(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   pickRandomHiltColourFirstHalf(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
   pickRandomHiltColourSecondHalf(
+    tokenId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  pickRandomTrait(
     tokenId: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -513,6 +587,8 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getAllMintedTokens(overrides?: CallOverrides): Promise<BigNumber[]>;
+
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -531,6 +607,11 @@ export interface OrigamiNFT extends BaseContract {
 
     mintOrigamiNFT(overrides?: CallOverrides): Promise<void>;
 
+    mintedTokenIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     name(overrides?: CallOverrides): Promise<string>;
 
     ownerOf(
@@ -548,12 +629,22 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
+    pickRandomElement(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     pickRandomHiltColourFirstHalf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
     pickRandomHiltColourSecondHalf(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    pickRandomTrait(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -655,6 +746,8 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getAllMintedTokens(overrides?: CallOverrides): Promise<BigNumber>;
+
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -675,6 +768,11 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    mintedTokenIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     name(overrides?: CallOverrides): Promise<BigNumber>;
 
     ownerOf(
@@ -692,12 +790,22 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    pickRandomElement(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     pickRandomHiltColourFirstHalf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     pickRandomHiltColourSecondHalf(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    pickRandomTrait(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -755,6 +863,10 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getAllMintedTokens(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getApproved(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -775,6 +887,11 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    mintedTokenIds(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     ownerOf(
@@ -792,12 +909,22 @@ export interface OrigamiNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    pickRandomElement(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     pickRandomHiltColourFirstHalf(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     pickRandomHiltColourSecondHalf(
+      tokenId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    pickRandomTrait(
       tokenId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

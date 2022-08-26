@@ -6,9 +6,10 @@ import { MetaMaskInpageProvider } from "@metamask/providers";
 import { ethers } from "ethers";
 import origamiNFT from "../../config/abi/OrigamiNFT.json";
 import { CONTRACT_ADDRESS } from "../../config/constants/origamiSwords";
-import { OrigamiNFT__factory } from "../../typechain-types/typechain-types";
+import { OrigamiNFT__factory } from "../../typechain-types";
 import { OrigamiNFT } from "../../typechain-types/contracts/OrigamiNFT";
 import useGetTokensByAddress from "./hooks/useGetTokensByAddress";
+import useGetRecentlyMintedTokens from "./hooks/useGetRecentlyMintedTokens";
 
 declare global {
   interface Window {
@@ -104,7 +105,10 @@ const Nft: NextPage = () => {
     currentAccount
   );
 
-  console.log("from custom hook", nftObjects);
+  const { recentlyMintedTokens } = useGetRecentlyMintedTokens(
+    nftContract as OrigamiNFT
+  );
+  console.log("get recently minted tokens", recentlyMintedTokens);
 
   // Contract effects
   useEffect(() => {
@@ -137,13 +141,16 @@ const Nft: NextPage = () => {
   const minNft = async () => {
     try {
       if (nftContract) {
+        setIsLoading(true);
         let txn = await nftContract?.mintOrigamiNFT();
         await txn?.wait();
+        setIsLoading(false);
         console.log("mint txn", txn);
       }
     } catch (error) {
       console.log("error minting nft");
       console.log(error);
+      setIsLoading(false);
     }
   };
 
@@ -164,20 +171,24 @@ const Nft: NextPage = () => {
       )}
       {currentAccount && (
         <span>{`${currentAccount.slice(0, 4)}...${currentAccount.slice(
-          currentAccount.length - 4,
-          currentAccount.length
+          -4
         )}`}</span>
       )}
 
       <button onClick={minNft}>Mint NFT</button>
 
       <ul>
-        {nftObjects &&
-          nftObjects.map((nft) => (
+        {recentlyMintedTokens &&
+          recentlyMintedTokens.map((nft) => (
             <li key={nft.name}>
               <h3>{nft.name}</h3>
               <Image src={nft.image} alt="nft image" width={300} height={300} />
-              <h5>{nft.description}</h5>
+              <h4>{nft.description}</h4>
+              {nft.attributes.map((attr, index) => (
+                <h5 key={index}>
+                  {attr.trait_type}: {attr.value}
+                </h5>
+              ))}
             </li>
           ))}
       </ul>

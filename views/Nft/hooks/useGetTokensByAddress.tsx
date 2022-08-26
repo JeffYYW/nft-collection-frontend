@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { OrigamiNFT } from "../../../typechain-types/contracts/OrigamiNFT";
 import { ethers } from "ethers";
-
-interface INFTObject {
-  description: string;
-  image: string;
-  name: string;
-}
+import { INFTObject } from "../types";
 
 const useGetTokensByAddress = (contract: OrigamiNFT, address: string) => {
   const [nftObjects, setNftObjects] = useState<INFTObject[]>([]);
@@ -18,15 +13,12 @@ const useGetTokensByAddress = (contract: OrigamiNFT, address: string) => {
         const tokens: ethers.BigNumber[] = (await contract?.getTokensByAddress(
           address
         )) as ethers.BigNumber[];
-        console.log("tokens", tokens);
 
         const readableTokens: number[] = tokens?.map((token) =>
           token.toNumber()
         );
-        console.log("readable tokens", readableTokens);
 
         if (readableTokens.length !== 0) {
-          console.log("readableTokens in get", readableTokens);
           const getUris = async () => {
             const uriList: string[] = [];
 
