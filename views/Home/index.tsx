@@ -8,7 +8,7 @@ const Home: React.FC = () => {
         Just a playground for some projects
       </h1>
       <ul>
-        <li>
+        <li className="underline">
           <Link href="/nft">NFT Collection</Link>
         </li>
       </ul>
