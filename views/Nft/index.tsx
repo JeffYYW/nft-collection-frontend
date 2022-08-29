@@ -11,6 +11,7 @@ import { OrigamiNFT } from "../../typechain-types/contracts/OrigamiNFT";
 import useGetTokensByAddress from "./hooks/useGetTokensByAddress";
 import useGetRecentlyMintedTokens from "./hooks/useGetRecentlyMintedTokens";
 import Spinner from "../../components/Spinner";
+import { useConnectWallet } from "../../contexts/ConnectWalletContext";
 
 declare global {
   interface Window {
@@ -19,69 +20,72 @@ declare global {
 }
 
 const Nft: NextPage = () => {
-  const [currentAccount, setCurrentAccount] = useState("");
+  // const [currentAccount, setCurrentAccount] = useState("");
   const [nftContract, setNftContract] = useState<OrigamiNFT>();
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
+  const { currentAccount, connectWalletAction, walletConnecting } =
+    useConnectWallet();
 
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        setIsLoading(false);
-        return;
-      }
+  // const checkIfWalletIsConnected = async () => {
+  //   try {
+  //     const { ethereum } = window;
 
-      const accounts = (await ethereum.request({
-        method: "eth_accounts",
-      })) as string[];
+  //     if (!ethereum) {
+  //       alert("Please install MetaMask");
+  //       setIsLoading(false);
+  //       return;
+  //     }
 
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Connected", account);
-        setCurrentAccount(account);
-      } else {
-        console.log("No authorized account found");
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  //     const accounts = (await ethereum.request({
+  //       method: "eth_accounts",
+  //     })) as string[];
 
-    setIsLoading(false);
-  };
+  //     if (accounts.length !== 0) {
+  //       const account = accounts[0];
+  //       console.log("Connected", account);
+  //       setCurrentAccount(account);
+  //     } else {
+  //       console.log("No authorized account found");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
 
-  const connectWalletAction = async () => {
-    try {
-      const { ethereum } = window;
+  //   setIsLoading(false);
+  // };
 
-      if (!ethereum) {
-        alert("Please install MetaMask");
-        setIsLoading(false);
-        return;
-      }
+  // const connectWalletAction = async () => {
+  //   try {
+  //     const { ethereum } = window;
 
-      const accounts = (await ethereum.request({
-        method: "eth_requestAccounts",
-      })) as string[];
+  //     if (!ethereum) {
+  //       alert("Please install MetaMask");
+  //       setIsLoading(false);
+  //       return;
+  //     }
 
-      if (accounts.length !== 0) {
-        console.log("Connected", accounts[0]);
-        setCurrentAccount(accounts[0]);
-      } else {
-        console.log("No authorized account found");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     const accounts = (await ethereum.request({
+  //       method: "eth_requestAccounts",
+  //     })) as string[];
+
+  //     if (accounts.length !== 0) {
+  //       console.log("Connected", accounts[0]);
+  //       setCurrentAccount(accounts[0]);
+  //     } else {
+  //       console.log("No authorized account found");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   // Wallet connection effects
-  useEffect(() => {
-    setIsLoading(true);
-    checkIfWalletIsConnected();
-    connectWalletAction();
-  }, []);
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   checkIfWalletIsConnected();
+  //   connectWalletAction();
+  // }, []);
 
   // Get contract on component mount
   useEffect(() => {
@@ -103,7 +107,7 @@ const Nft: NextPage = () => {
 
   const { nftObjects } = useGetTokensByAddress(
     nftContract as OrigamiNFT,
-    currentAccount
+    currentAccount as string
   );
 
   const { recentlyMintedTokens } = useGetRecentlyMintedTokens(
@@ -142,16 +146,16 @@ const Nft: NextPage = () => {
   const minNft = async () => {
     try {
       if (nftContract) {
-        setIsLoading(true);
+        // setIsLoading(true);
         let txn = await nftContract?.mintOrigamiNFT();
         await txn?.wait();
-        setIsLoading(false);
+        // setIsLoading(false);
         console.log("mint txn", txn);
       }
     } catch (error) {
       console.log("error minting nft");
       console.log(error);
-      setIsLoading(false);
+      // setIsLoading(false);
     }
   };
 
@@ -185,7 +189,7 @@ const Nft: NextPage = () => {
         Mint NFT
       </button>
 
-      {isLoading && <Spinner />}
+      {walletConnecting && <Spinner />}
 
       <h3 className="text-3xl mb-4">Pastel Origami Sword Collection</h3>
       <ul className="grid grid-cols-3 gap-4">
