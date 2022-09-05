@@ -1,9 +1,13 @@
 import React from "react";
 
-const Spinner: React.FC = () => {
+type IProps = {
+  text: string;
+};
+
+const Spinner: React.FC<IProps> = ({ text }) => {
   return (
     <>
-      <span>Minting in progress...</span>
+      <span>{text}</span>
       <svg
         role="status"
         className="inline h-8 w-8 animate-spin mr-2 text-gray-200 dark:text-gray-600 fill-blue-600"
