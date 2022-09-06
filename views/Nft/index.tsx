@@ -11,6 +11,8 @@ import Spinner from "../../components/Spinner";
 import { useConnectWallet } from "../../contexts/ConnectWalletContext";
 import useGetContract from "./hooks/useGetContract";
 import truncateHash from "../../utils/truncateHash";
+import { spawn } from "child_process";
+import useGetAccountBalance from "../../hooks/useGetAccountBalance";
 
 declare global {
   interface Window {
@@ -32,8 +34,8 @@ const Nft: NextPage = () => {
     nftContract as OrigamiNFT
   );
 
-  console.log("nftObjects", nftObjects);
-  console.log("get recently minted tokens", recentlyMintedTokens);
+  // console.log("nftObjects", nftObjects);
+  // console.log("get recently minted tokens", recentlyMintedTokens);
 
   // Contract effects
   useEffect(() => {
@@ -103,6 +105,9 @@ const Nft: NextPage = () => {
         </h2>
         {isLoading && <Spinner text={"Minting in progress..."} />}
         <ul className="grid grid-cols-3 gap-4">
+          {nftObjects.length === 0 && (
+            <span>{"Can't find any tokens belonging to this address"}</span>
+          )}
           {nftObjects &&
             nftObjects.map((nft) => (
               <li key={nft.name}>
@@ -126,6 +131,9 @@ const Nft: NextPage = () => {
       <section className="my-8">
         <h2 className="text-3xl my-4 text-center">Recently Minted Tokens</h2>
         <ul className="grid grid-cols-3 gap-4">
+          {recentlyMintedTokens.length === 0 && (
+            <span>{"Can't find any recently minted tokens"}</span>
+          )}
           {recentlyMintedTokens &&
             recentlyMintedTokens.map((nft) => (
               <li key={nft.name}>

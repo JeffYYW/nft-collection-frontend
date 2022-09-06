@@ -1,13 +1,16 @@
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useConnectWallet } from "../contexts/ConnectWalletContext";
+import useGetAccountBalance from "../hooks/useGetAccountBalance";
 import truncateHash from "../utils/truncateHash";
 import Spinner from "./Spinner";
 
 const Header: React.FC = () => {
   const { currentAccount, connectWalletAction, walletConnecting } =
     useConnectWallet();
-  console.log("currentAccount from header", currentAccount);
+
+  const { accountBalance } = useGetAccountBalance();
+
   return (
     <div className="shadow bg-white">
       <div className="h-16 mx-auto px-5 flex items-center justify-between">
@@ -36,6 +39,7 @@ const Header: React.FC = () => {
         </ul>
 
         <ul className="flex items-center gap-5">
+          <li>Current balance: {accountBalance.slice(0, 4)}</li>
           <li>
             {walletConnecting && <Spinner text={"Wallet Connecting..."} />}
             {currentAccount && (
